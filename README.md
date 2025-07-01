@@ -1,3 +1,9 @@
+# 个人调整
+* 增加了些代码注释
+* 实现了一个test.py文件，用生成的模型测试相似度
+* 调整了requirements.txt文件，有些依赖需要更新
+* 下载403，要手动调整代码，https://github.com/pytorch/text/issues/2247
+
 # Word2Vec in PyTorch
 
 Implementation of the first paper on word2vec - [Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781). For detailed explanation of the code here, check my post - [Word2vec with PyTorch: Reproducing Original Paper](https://notrocketscience.blog/word2vec-with-pytorch-implementing-original-paper/).

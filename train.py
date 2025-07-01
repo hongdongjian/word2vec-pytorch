@@ -17,7 +17,8 @@ from utils.helper import (
 
 def train(config):
     os.makedirs(config["model_dir"])
-    
+
+    # 下载数据集，初始化训练集数据加载器，并初始化词表
     train_dataloader, vocab = get_dataloader_and_vocab(
         model_name=config["model_name"],
         ds_name=config["dataset"],
@@ -28,6 +29,7 @@ def train(config):
         vocab=None,
     )
 
+    # 初始化验证集数据加载器
     val_dataloader, _ = get_dataloader_and_vocab(
         model_name=config["model_name"],
         ds_name=config["dataset"],
@@ -38,17 +40,24 @@ def train(config):
         vocab=vocab,
     )
 
+    # 获取词表大小
     vocab_size = len(vocab.get_stoi())
     print(f"Vocabulary size: {vocab_size}")
 
+    # 初始化模型
     model_class = get_model_class(config["model_name"])
     model = model_class(vocab_size=vocab_size)
+    # 定义损失函数为交叉熵损失，常用于分类任务
     criterion = nn.CrossEntropyLoss()
 
+    # 根据配置文件获取优化器类
     optimizer_class = get_optimizer_class(config["optimizer"])
+    # 用指定学习率初始化优化器，优化模型参数。
     optimizer = optimizer_class(model.parameters(), lr=config["learning_rate"])
+    # 为优化器设置学习率调度器，动态调整学习率。
     lr_scheduler = get_lr_scheduler(optimizer, config["epochs"], verbose=True)
 
+    # 自动检测是否有可用GPU，有则用GPU，否则用CPU。
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     trainer = Trainer(
@@ -67,9 +76,11 @@ def train(config):
         model_name=config["model_name"],
     )
 
+    # 开始训练
     trainer.train()
     print("Training finished.")
 
+    # 保存模型、损失函数、词表、config
     trainer.save_model()
     trainer.save_loss()
     save_vocab(vocab, config["model_dir"])
